@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import test.bankRQRS.CreateUserRQ;
-import test.bankRQRS.CreateUserRS;
-import test.bankRQRS.Error;
-import test.bankRQRS.LoginUserRQ;
-import test.bankRQRS.LoginUserRS;
-import test.bankRQRS.LogoutUserRQ;
-import test.bankRQRS.LogoutUserRS;
-import test.bankRQRS.SearchRQ;
-import test.bankRQRS.SearchRS;
-import test.dbAccess.DBAccess;
+import test.bankrqrs.CreateUserRQ;
+import test.bankrqrs.CreateUserRS;
+import test.bankrqrs.Error;
+import test.bankrqrs.LoginUserRQ;
+import test.bankrqrs.LoginUserRS;
+import test.bankrqrs.LogoutUserRQ;
+import test.bankrqrs.LogoutUserRS;
+import test.bankrqrs.SearchRQ;
+import test.bankrqrs.SearchRS;
+import test.dbaccess.DBAccess;
 import test.entity.User;
 import test.manager.ApplicationManager;
 

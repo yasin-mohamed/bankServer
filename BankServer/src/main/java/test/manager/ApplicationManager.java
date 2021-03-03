@@ -11,18 +11,18 @@ import java.util.stream.Collectors;
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import test.bankRQRS.Error;
-import test.bankRQRS.LoginUserRS;
-import test.bankRQRS.SearchRQ;
-import test.bankRQRS.SearchRS;
-import test.dbAccess.DBAccess;
+import test.bankrqrs.Error;
+import test.bankrqrs.LoginUserRS;
+import test.bankrqrs.SearchRQ;
+import test.bankrqrs.SearchRS;
+import test.dbaccess.DBAccess;
 import test.entity.BankStatement;
 
 public class ApplicationManager {
     
-	public static String ADMIN_ROLE="Admin";
-	public static String USER_ROLE="User";
-	public static String TEST_ROLE="Test";
+	public static final String ADMIN_ROLE="Admin";
+	public static final String USER_ROLE="User";
+	public static final String TEST_ROLE="Test";
 	static Logger log = Logger.getLogger(ApplicationManager.class.getName());
 
 	public String addDays(SimpleDateFormat formatter1,String fromDate,int countOfDays) {
@@ -54,7 +54,7 @@ public class ApplicationManager {
 			}
 			return 0;
 		});
-		if(allStatement!=null&&allStatement.size()>0) {
+		if(!allStatement.isEmpty()) {
 			fromDate=allStatement.get(allStatement.size()-1).getDatefield();
 		}
 		return fromDate;
@@ -132,7 +132,7 @@ public class ApplicationManager {
 			DBAccess dBAccess=new DBAccess(); 
 			List<BankStatement> allStatement=dBAccess.getSerachAllRecords(jdbcTemplate);
 			List<BankStatement> allStatementBetweenDates =filterSearchCriteria(allStatement, searchRQ, loggedUser);
-			if(allStatementBetweenDates!=null&&allStatementBetweenDates.size()!=0) {
+			if(allStatementBetweenDates!=null&&!allStatementBetweenDates.isEmpty()) {
 				searchRS.setStatementList(allStatementBetweenDates);
 			}else {
 				error=new Error();

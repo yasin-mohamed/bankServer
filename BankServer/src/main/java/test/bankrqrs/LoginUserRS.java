@@ -1,4 +1,4 @@
-package test.bankRQRS;
+package test.bankrqrs;
 
 import lombok.Data;
 

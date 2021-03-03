@@ -1,11 +1,9 @@
-package test.bankRQRS;
+package test.bankrqrs;
 
 import lombok.Data;
 
 @Data
-public class CreateUserRQ {
-	
+public class LogoutUserRQ {
 	private String userName;
 	private String password;
-	private String role;
 }

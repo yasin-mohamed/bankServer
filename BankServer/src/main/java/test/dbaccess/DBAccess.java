@@ -1,4 +1,4 @@
-package test.dbAccess;
+package test.dbaccess;
 
 import java.util.List;
 
@@ -7,34 +7,31 @@ import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import test.bankRQRS.CreateUserRQ;
-import test.bankRQRS.LoginUserRQ;
-import test.controller.BankServerController;
+import test.bankrqrs.CreateUserRQ;
+import test.bankrqrs.LoginUserRQ;
 import test.entity.BankStatement;
 import test.entity.User;
 
 public class DBAccess {
-	static Logger log = Logger.getLogger(BankServerController.class.getName());
+	static Logger log = Logger.getLogger(DBAccess.class.getName());
 
 	public User getUserObject(JdbcTemplate jdbcTemplate,String sql) {
 		User user=null;
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		List<User> allUser=jdbcTemplate.query( sql, new BeanPropertyRowMapper(User.class));
-		if(allUser!=null&&allUser.size()>0) {
+		if(!allUser.isEmpty()) {
 			user=allUser.get(0);
 		}
 		return user;
 	}
 	public void createUserTable(JdbcTemplate jdbcTemplate) {
-		//log.info(" Entering createUserTable");
 		try {
 			String sql="CREATE TABLE Users (id AUTOINCREMENT, username varchar(255) NOT NULL, password varchar(255), role varchar(255),login boolean,PRIMARY KEY(id));";
-			//log.info(" SQL:"+sql);
 			jdbcTemplate.update(sql);
 		} catch (UncategorizedSQLException e) {
-			// TODO: handle exception
+			log.info("");
 		}
-		//log.info(" Exiting createUserTable");
+		
 	}
 	public User checkUserExistOrNot(CreateUserRQ createUserRQ,JdbcTemplate jdbcTemplate) {
 		log.info(" Entering checkUserExistOrNot");

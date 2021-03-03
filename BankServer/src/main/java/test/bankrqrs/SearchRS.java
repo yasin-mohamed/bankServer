@@ -1,4 +1,4 @@
-package test.bankRQRS;
+package test.bankrqrs;
 
 import java.util.List;
 
