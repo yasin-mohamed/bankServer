@@ -1,18 +1,14 @@
 package test.controller;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import test.bankRQRS.CreateUserRQ;
@@ -25,7 +21,6 @@ import test.bankRQRS.LogoutUserRS;
 import test.bankRQRS.SearchRQ;
 import test.bankRQRS.SearchRS;
 import test.dbAccess.DBAccess;
-import test.entity.BankStatement;
 import test.entity.User;
 import test.manager.ApplicationManager;
 
@@ -111,6 +106,7 @@ public class BankServerController {
 				loginUserRS.setRole(user.getRole());
 				loginUserRS.setUserName(user.getUsername());
 				loginUserRS.setEchoToken(request.getSession().getId());
+				
 				dBAccess.updateLoginUser(jdbcTemplate,true,loginUserRQ.getUserName(),loginUserRQ.getPassword());
 
 				LoginUserRS sessionDetails=new LoginUserRS();
@@ -133,7 +129,7 @@ public class BankServerController {
 		Error error=null;
 		LoginUserRS loggedUser=(LoginUserRS) session.getAttribute("UserDetails");
 		ApplicationManager applicationManager=new ApplicationManager();
-		if(loggedUser==null || !loggedUser.getEchoToken().equalsIgnoreCase(session.getId())) {
+		if(loggedUser==null) {
 			error=new Error();
 			error.setCode(401);
 			error.setMessage("You have to login first.");
@@ -149,6 +145,7 @@ public class BankServerController {
 			searchRS.setError(error);
 			return searchRS;
 		}
+		
 		applicationManager.generateSearchResponse(jdbcTemplate, searchRQ, loggedUser, searchRS, error);
 		log.info("Exiting searchReport ");
 		return searchRS;

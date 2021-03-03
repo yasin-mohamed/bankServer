@@ -1,6 +1,7 @@
 package test.manager;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -8,14 +9,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import test.bankRQRS.Error;
 import test.bankRQRS.LoginUserRS;
 import test.bankRQRS.SearchRQ;
 import test.bankRQRS.SearchRS;
-import test.controller.BankServerController;
 import test.dbAccess.DBAccess;
-import test.bankRQRS.Error;
 import test.entity.BankStatement;
 
 public class ApplicationManager {
@@ -25,13 +25,13 @@ public class ApplicationManager {
 	public static String TEST_ROLE="Test";
 	static Logger log = Logger.getLogger(ApplicationManager.class.getName());
 
-	public String addDays(SimpleDateFormat formatter1,String fromDate) {
+	public String addDays(SimpleDateFormat formatter1,String fromDate,int countOfDays) {
 		String toDate=fromDate;
 		log.info("Entering addDays");
 		try {
 			Calendar c = Calendar.getInstance();
 			c.setTime(formatter1.parse(fromDate));
-			c.add(Calendar.DAY_OF_MONTH, 3);
+			c.add(Calendar.DAY_OF_MONTH, countOfDays);
 			toDate = formatter1.format(c.getTime()); 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -43,12 +43,29 @@ public class ApplicationManager {
 	public boolean checkIfEmptyString(String value) {
 		return (value==null || value.isEmpty());
 	}
-	public void checkSearchField(SearchRQ searchRQ,LoginUserRS loggedUser,SimpleDateFormat formatter1) {
+	public String getFromDate(List<BankStatement> allStatement,SimpleDateFormat formatter1) {
+		String fromDate=formatter1.format(new Date());
+		allStatement.sort((BankStatement s1, BankStatement s2)->{
+			try {
+				return formatter1.parse(s1.getDatefield()).compareTo(formatter1.parse(s2.getDatefield()));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return 0;
+		});
+		if(allStatement!=null&&allStatement.size()>0) {
+			fromDate=allStatement.get(allStatement.size()-1).getDatefield();
+		}
+		return fromDate;
+	}
+	public void checkSearchField(List<BankStatement> allStatement,SearchRQ searchRQ,LoginUserRS loggedUser,SimpleDateFormat formatter1) {
 		log.info("Entering checkSearchField");
 		try {
-			String fromDate=formatter1.format(new Date());
-			String toDate=addDays(formatter1,fromDate);
 			
+			String fromDate=getFromDate(allStatement, formatter1);
+			String toDate=fromDate;
+			fromDate=addDays(formatter1,fromDate,-90);
 			if(loggedUser.getRole().equalsIgnoreCase(ADMIN_ROLE) && 
 					(checkIfEmptyString(searchRQ.getFromDate()) || checkIfEmptyString(searchRQ.getToDate()))&& 
 					(checkIfEmptyString(searchRQ.getFromAmount()) || checkIfEmptyString(searchRQ.getToAmount()))) {
@@ -102,7 +119,7 @@ public class ApplicationManager {
 	public List<BankStatement> filterSearchCriteria(List<BankStatement> allStatement,SearchRQ searchRQ,LoginUserRS loggedUser) {
 		SimpleDateFormat formatter1=new SimpleDateFormat("dd.MM.yyyy"); 
 		DecimalFormat decimalFormatter=new DecimalFormat("#.###");
-		checkSearchField(searchRQ,loggedUser,formatter1);
+		checkSearchField(allStatement,searchRQ,loggedUser,formatter1);
 		return allStatement
 				  .stream()
 				  .filter(c -> {
